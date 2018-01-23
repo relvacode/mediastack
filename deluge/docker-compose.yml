@@ -1,0 +1,56 @@
+version: '2'
+networks:
+  default:
+
+services:
+  vpn:
+    image: dperson/openvpn-client
+    tty: true
+    restart: unless-stopped
+    security_opt:
+      - label:disable
+    cap_add:
+      - NET_ADMIN
+    devices:
+      - /dev/net/tun
+    networks:
+      - default
+    volumes:
+      - /dev/net:/dev/net:z
+      - /var/lib/docker/persistence/vpn:/vpn
+    command: -f 8112 -d
+  deluge:
+    image: linuxserver/deluge
+    environment:
+      PUID: '1003'
+      PGID: '1005'
+      TZ: Europe/London
+      UMASK_SET: '002'
+    depends_on:
+      - vpn
+    network_mode: "service:vpn"
+    volumes:
+    - /var/lib/docker/persistence/deluge:/config
+    - /var/lib/ds/torrent:/var/lib/ds/torrent
+    tty: true
+  proxy:
+    image: dperson/nginx
+    depends_on:
+      - deluge
+    environment:
+      VIRTUAL_HOST: ${VIRTUAL_HOST}
+      VIRTUAL_PORT: '80'
+      ENABLE_ACME: 'true'
+    expose:
+      - 80
+    links:
+      - vpn:deluge
+    networks:
+      - default
+    tmpfs:
+      - /run
+      - /tmp
+      - /var/cache/nginx
+    restart: unless-stopped
+    tty: true
+    command: -w "http://deluge:8112;/"

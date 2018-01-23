@@ -1,8 +1,9 @@
 version: '2'
 networks:
-  default:
+  deluge:
     external:
-      name: applications
+      name: deluge_default
+
 services:
   sonarr:
     image: linuxserver/sonarr
@@ -10,6 +11,9 @@ services:
       PUID: '1003'
       PGID: '1005'
       TZ: Europe/London
+    networks:
+      - default
+      - deluge
     volumes:
     - /var/lib/docker/persistence/sonarr:/config
     - /var/lib/ds/tvshows:/tv
