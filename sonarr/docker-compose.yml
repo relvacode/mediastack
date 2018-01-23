@@ -1,0 +1,30 @@
+version: '2'
+networks:
+  default:
+    external:
+      name: applications
+services:
+  sonarr:
+    image: linuxserver/sonarr
+    environment:
+      PUID: '1003'
+      PGID: '1005'
+      TZ: Europe/London
+    volumes:
+    - /var/lib/docker/persistence/sonarr:/config
+    - /var/lib/ds/tvshows:/tv
+    - /var/lib/ds/torrent:/var/lib/ds/torrent
+  oauth:
+    image: a5huynh/oauth2_proxy
+    volumes:
+    - /var/lib/docker/persistence/oauth:/config:ro
+    tty: true
+    environment:
+    - VIRTUAL_HOST=${VIRTUAL_HOST}
+    - VIRTUAL_PORT=80
+    - ENABLE_ACME=true
+    expose:
+    - 80
+    command:
+    - -upstream=http://sonarr:8989
+    - -config=/config/oauth2_proxy.cfg
