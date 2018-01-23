@@ -1,16 +1,14 @@
 version: '2'
-networks:
-  default:
-    external:
-      name: applications
 services:
   proxy:
     image: neilpang/nginx-proxy
+    network_mode: "host"
     ports:
-    - '80:80'
-    - '443:443'
+      - 80:80
+      - 443:443
     volumes:
     - /var/run/docker.sock:/tmp/docker.sock:ro
     - /var/lib/docker/persistence/proxy/certs:/etc/nginx/certs 
     - /var/lib/docker/persistence/proxy/acme-certs:/acmecerts
     tty: true
+
