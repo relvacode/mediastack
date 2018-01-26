@@ -7,8 +7,8 @@ services:
   radarr:
     image: linuxserver/radarr
     environment:
-      PUID: '1001'
-      PGID: '1000'
+      PUID: '1003'
+      PGID: '1005'
     networks:
     - default
     - deluge
