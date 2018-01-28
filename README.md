@@ -31,10 +31,3 @@ Each application needs its own subdomain to work on, the easiest way to achieve 
 Each application comes bundled with [oauth2_proxy](https://hub.docker.com/r/a5huynh/oauth2_proxy/) for authentication using providers like Google which allows multiple users to login to your server using just their Google account.
 
 A configuration file is expected on the host in `/var/lib/docker/persistence/oauth/oauth2_proxy.cfg` an example configuration file can be found [here](https://github.com/bitly/oauth2_proxy/blob/master/contrib/oauth2_proxy.cfg.example).
-
-
-Features VPN enabled Deluge client and a global frontend SSL proxy with Let's Encrypt certificates.
-
-Authentication access to Sonarr and Radarr is protected by 
-
-The docker-compose environment variable `VIRTUAL_HOST` describes the domain to access Sonnarr, Radarr and Deluge on via the SSL proxy.
