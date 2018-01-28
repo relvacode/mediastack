@@ -1,0 +1,13 @@
+version: '2'
+services:
+  minio:
+    image: minio/minio
+    environment:
+    - VIRTUAL_HOST=${VIRTUAL_HOST}
+    - VIRTUAL_PORT=9000
+    - ENABLE_ACME=true
+    volumes:
+    - /var/lib/ds:/var/lib/ds
+    - /var/lib/docker/persistence/minio:/root/.minio
+    command: server /var/lib/ds
+    tty: true
