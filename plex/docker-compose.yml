@@ -6,7 +6,8 @@ services:
       TZ: Europe/London
       PLEX_UID: '1003'
       PLEX_GID: '1005'
-    network_mode: host
+    ports:
+     - 32400:32400
     volumes:
     - /var/lib/plexmediaserver:/config
     - /var/lib/ds/transcode:/transcode
