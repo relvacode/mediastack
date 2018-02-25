@@ -3,7 +3,6 @@ networks:
   deluge:
     external:
       name: deluge_default
-
 services:
   sonarr:
     image: linuxserver/sonarr
