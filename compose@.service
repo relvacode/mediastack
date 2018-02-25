@@ -1,0 +1,11 @@
+[Unit]
+Description=Docker Compose Stack
+Requires=docker.service
+After=docker.service
+
+[Service]
+WorkingDirectory=/var/lib/docker-compose/%i
+ExecStart=/usr/bin/docker-compose up  --abort-on-container-exit
+
+[Install]
+WantedBy=multi-user.target
