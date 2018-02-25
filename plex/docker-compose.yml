@@ -13,14 +13,14 @@ services:
     - /var/lib/ds/transcode:/transcode
     - /var/lib/ds/movies:/var/lib/ds/movies
     - /var/lib/ds/tvshows:/var/lib/ds/tvshows
-  plexpy:
-    image: linuxserver/plexpy
+  tautulli:
+    image: shiggins8/tautulli
     environment:
       TZ: Europe/London
       PUID: '1003'
       PGID: '1005'
     volumes:
-    - /var/lib/docker/persistence/plexpy:/config
+    - /var/lib/docker/persistence/tautulli:/config
     - /var/lib/plexmediaserver/Library/Application Support/Plex Media Server/Logs:/logs:ro
     tty: true
   oauth:
@@ -35,5 +35,5 @@ services:
     - /var/lib/docker/persistence/oauth:/config:ro
     tty: true
     command:
-    - -upstream=http://plexpy:8181
+    - -upstream=http://tautulli:8181
     - -config=/config/oauth2_proxy.cfg
