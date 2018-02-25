@@ -13,8 +13,6 @@ services:
     - /var/lib/ds/transcode:/transcode
     - /var/lib/ds/movies:/var/lib/ds/movies
     - /var/lib/ds/tvshows:/var/lib/ds/tvshows
-    - /var/lib/ds/music:/var/lib/ds/music
-    tty: true
   plexpy:
     image: linuxserver/plexpy
     environment:
