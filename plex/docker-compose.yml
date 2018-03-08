@@ -11,6 +11,7 @@ services:
     volumes:
     - /var/lib/plexmediaserver:/config
     - /var/lib/ds/transcode:/transcode
+    - /var/lib/ds/transcode:/tmp
     - /var/lib/ds/movies:/var/lib/ds/movies
     - /var/lib/ds/tvshows:/var/lib/ds/tvshows
   tautulli:
@@ -37,3 +38,4 @@ services:
     command:
     - -upstream=http://tautulli:8181
     - -config=/config/oauth2_proxy.cfg
+    - -skip-auth-regex=^/api/
