@@ -1,0 +1,13 @@
+[Unit]
+Description=DenyHosts SSH Brute Force Mitigator
+After=sshd.service
+Wants=sshd.service
+
+[Service]
+Environment='PYTHONPATH=/usr/lib/python2.7/site-packages'
+ExecStart=/usr/local/bin/denyhosts --foreground --config /etc/denyhosts.conf  --file /var/log/secure
+Restart=on-failure
+RestartSec=42s
+
+[Install]
+WantedBy=multi-user.target
