@@ -6,8 +6,6 @@ services:
       - "80:80"
       - "443:443"
     network_mode: "host"
-   # labels:
-    #  com.github.jrcs.letsencrypt_nginx_proxy_companion.nginx_proxy: "true"
     volumes:
       - /var/lib/docker/persistence/proxy/conf.d:/etc/nginx/conf.d
       - vhost:/etc/nginx/vhost.d

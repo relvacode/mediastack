@@ -29,6 +29,7 @@ services:
     - LETSENCRYPT_HOST=${VIRTUAL_HOST}
     - LETSENCRYPT_EMAIL=${LETSENCRYPT_EMAIL}
     - VIRTUAL_PORT=80
+    - SSL_POLICY=AWS-TLS-1-2-2017-01
     command:
     - -upstream=http://radarr:7878
     - -config=/config/oauth2_proxy.cfg

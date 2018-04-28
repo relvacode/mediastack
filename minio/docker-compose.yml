@@ -7,6 +7,7 @@ services:
     - LETSENCRYPT_HOST=${VIRTUAL_HOST}
     - LETSENCRYPT_EMAIL=${LETSENCRYPT_EMAIL}
     - VIRTUAL_PORT=9000
+    - SSL_POLICY=AWS-TLS-1-2-2017-01
     volumes:
     - /var/lib/ds:/var/lib/ds
     - /var/lib/docker/persistence/minio:/root/.minio
