@@ -4,8 +4,9 @@ services:
     image: minio/minio
     environment:
     - VIRTUAL_HOST=${VIRTUAL_HOST}
+    - LETSENCRYPT_HOST=${VIRTUAL_HOST}
+    - LETSENCRYPT_EMAIL=${LETSENCRYPT_EMAIL}
     - VIRTUAL_PORT=9000
-    - ENABLE_ACME=true
     volumes:
     - /var/lib/ds:/var/lib/ds
     - /var/lib/docker/persistence/minio:/root/.minio

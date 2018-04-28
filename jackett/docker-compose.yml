@@ -21,8 +21,9 @@ services:
     tty: true
     environment:
     - VIRTUAL_HOST=${VIRTUAL_HOST}
+    - LETSENCRYPT_HOST=${VIRTUAL_HOST}
+    - LETSENCRYPT_EMAIL=${LETSENCRYPT_EMAIL}
     - VIRTUAL_PORT=80
-    - ENABLE_ACME=true
     expose:
     - 80
     command:
