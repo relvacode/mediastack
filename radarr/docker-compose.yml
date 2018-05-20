@@ -18,18 +18,9 @@ services:
     - /var/lib/ds/torrent:/var/lib/ds/torrent
     tty: true
   oauth:
-    image: a5huynh/oauth2_proxy
-    volumes:
-    - /var/lib/docker/persistence/oauth:/config:ro
-    tty: true
-    expose:
-    - 80
-    environment:
-    - VIRTUAL_HOST=${VIRTUAL_HOST}
-    - LETSENCRYPT_HOST=${VIRTUAL_HOST}
-    - LETSENCRYPT_EMAIL=${LETSENCRYPT_EMAIL}
-    - VIRTUAL_PORT=80
-    - SSL_POLICY=AWS-TLS-1-2-2017-01
+  oauth:
+    extends:
+      file: ../oauth/oauth-service.yml
+      service: oauth
     command:
-    - -upstream=http://radarr:7878
-    - -config=/config/oauth2_proxy.cfg
+      - http://radarr:7878
