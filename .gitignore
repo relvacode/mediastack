@@ -1,3 +1,4 @@
 */env
+globals
 oauth/oauth2_proxy.cfg
 oauth/emails.txt
