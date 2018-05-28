@@ -10,7 +10,7 @@ An all-in-one Docker compose media server for internet based hosting
   - VPN for private Deluge and Jackett communication
   
 
-## Media Applications
+### Applications
 
   - [Plex](https://hub.docker.com/r/plexinc/pms-docker/) for your own personal Netflix
   - [Sonarr](#sonarr-and-radarr) for managing your TV shows
@@ -18,10 +18,9 @@ An all-in-one Docker compose media server for internet based hosting
   - [Deluge](https://hub.docker.com/r/linuxserver/deluge/) for downloading torrents
   - [Jackett](https://hub.docker.com/r/linuxserver/jackett/) for searching torrents
   
-## Extra Applications
+### Extra
 
   - [Minio](https://www.minio.io/) for accessing your files remotely
-  - [OpenVPN Client](https://github.com/dperson/openvpn-client) for private downloads
 
 
 ## Setup
@@ -36,9 +35,9 @@ cd ssl
 docker-compose up -d
 ```
 
-### Environment Variables
+#### Virtual Host
 
-For each application the environment variable `VIRTUAL_HOST` is expected which instructs traefik what url host to serve that application on. 
+For each application to serve over HTTP/HTTPS the environment variable `VIRTUAL_HOST` is expected which instructs traefik what url host to serve that application on. 
 Define the virtual host when starting the application stack with
 
 ```
@@ -69,7 +68,29 @@ cd telemetry
 VIRTUAL_HOST=telemetry.example.org docker-compose up -d --build
 ```
 
-## [Sonarr](https://hub.docker.com/r/linuxserver/sonarr/) and [Radarr](https://hub.docker.com/r/linuxserver/radarr/)
+### Helper Script
+
+This repository provides a helpful shell script that wraps execution of docker compose.
+Checkout this directory to `/var/lib/docker-compose` and then add this to either your `~/.bashrc` or `~/.zshrc`
+
+```
+source /var/lib/docker-compose/_system/zshrc
+```
+
+Now from anywhere on your file system you can call
+
+```
+compose <stack> <action>
+
+compose ssl up -d
+compose sonarr logs
+```
+
+You can also place an [env](sonarr/env) file in the application directory to load environment variables for that application
+
+## Stacks
+
+### [Sonarr](https://hub.docker.com/r/linuxserver/sonarr/) and [Radarr](https://hub.docker.com/r/linuxserver/radarr/)
 
 > Replace the below with `radarr` to setup Radarr as well
 
