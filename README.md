@@ -61,7 +61,7 @@ To configure and build your oauth image:
     docker-compose -f oauth-service.yml build
     ```  
 You need to rebuild your image every time you update the configuration.
-The provided service in [oauth](oauth/oauth-service.yml) uses the `gelf` logging driver so no long will be available from the console. 
+The provided service in [oauth](oauth/oauth-service.yml) uses the `gelf` logging driver so no logging for those services will be available from the console. 
 
 ### Telemetry
 
