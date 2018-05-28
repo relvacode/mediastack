@@ -21,6 +21,7 @@ An all-in-one Docker compose media server for internet based hosting
 ### Extra
 
   - [Minio](https://www.minio.io/) for accessing your files remotely
+  - [Tautulli](https://hub.docker.com/r/linuxserver/tautulli/) for monitoring Plex
 
 
 ## Setup
@@ -45,9 +46,11 @@ cd sonarr
 VIRTUAL_HOST=sonarr.example.org docker-compose up -d
 ```
 
-### Oauth
+### OAuth
 
-Each application comes bundled with [oauth2_proxy](https://hub.docker.com/r/a5huynh/oauth2_proxy/) for authentication using providers like Google which allows multiple users to login to your server using just their Google account.
+Each application comes bundled with an [oauth2_proxy](https://hub.docker.com/r/a5huynh/oauth2_proxy/) authentication layer for providers like Google. This is not only useful to protect your applications against the internet but also to allow friends or family to login using their own credentials and monitor usage from the telemetry stack.
+
+To configure and build your oauth image:
 
   - Add your [oauth2_proxy.cfg](https://github.com/bitly/oauth2_proxy/blob/master/contrib/oauth2_proxy.cfg.example) to `oauth/oauth2_proxy.cfg`
   - Add your list of e-mails to `oauth/users/emails.txt`
@@ -57,6 +60,8 @@ Each application comes bundled with [oauth2_proxy](https://hub.docker.com/r/a5hu
     cd oauth
     docker-compose -f oauth-service.yml build
     ```  
+You need to rebuild your image every time you update the configuration.
+The provided service in [oauth](oauth/oauth-service.yml) uses the `gelf` logging driver so no long will be available from the console. 
 
 ### Telemetry
 
@@ -67,6 +72,8 @@ Start the telemetry stack using
 cd telemetry
 VIRTUAL_HOST=telemetry.example.org docker-compose up -d --build
 ```
+
+You can configure your own pipeline for Logstash in [telemetry/logstash/pipeline.conf](telemetry/logstash/pipeline.conf). Use Kibana at `VIRTUAL_HOST` to filter and visualise your access logs. To find messages that aren't access logs use the `_grokparsefailure` tag.
 
 ### Helper Script
 
