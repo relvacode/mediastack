@@ -32,6 +32,7 @@ Configure traefik by adding your [configuration file](https://docs.traefik.io/ba
 Then start traefik using
 
 ```
+cd ssl
 docker-compose up -d
 ```
 
@@ -51,12 +52,17 @@ Each application comes bundled with [oauth2_proxy](https://hub.docker.com/r/a5hu
 
   - Add your [oauth2_proxy.cfg](https://github.com/bitly/oauth2_proxy/blob/master/contrib/oauth2_proxy.cfg.example) to `oauth/oauth2_proxy.cfg`
   - Add your list of e-mails to `oauth/users/emails.txt`
-  - Run `docker-compose -f oauth-service.yml build` to build the oauth image shared by all applications
+  - Run this command below to build the oauth image shared by all applications
   
+    ```
+    cd oauth
+    docker-compose -f oauth-service.yml build
+    ```  
+
 ### Telemetry
 
 A built-in ELK stack is provided that uses the Docker `gelf` driver to forward the logs from each oauth container to a Kibana frontend.
-Start the telemetry stack using:
+Start the telemetry stack using
 
 ```
 cd telemetry
@@ -67,28 +73,22 @@ VIRTUAL_HOST=telemetry.example.org docker-compose up -d --build
 
 > Replace the below with `radarr` to setup Radarr as well
 
-__Config data__ goes in `/var/lib/docker/persistence/sonarr`
-
-__TV Shows__ in `/var/lib/ds/tvshows`
-
-__Torrent Data__ in `/var/lib/ds/torrent`
+| What | Where |
+| ---- | ----- |
+| Config | `/var/lib/docker/persistence/sonarr` |
+| TV Shows | `/var/lib/ds/tvshows` |
+| Movies | `/var/lib/ds/movies` |
+| Torrents | `/var/lib/ds/torrent` |
 
 ```
 cd sonarr
 VIRTUAL_HOST=sonarr.example.org docker-compose up -d
 ```
 
-### Indexers
-
-Start Jackett and add a new Torznab indexer to Sonarr 
-
-The hostname you need to enter is `http://jackett-api` and the port is `80`.
-
+Start and configure Jackett, then add a new Torznab indexer to Sonarr. 
+The hostname you need to enter is `jackett-api` and the port is `80`.
 You can add all Jackett sites as one Sonarr indexer using [this method](https://www.reddit.com/r/PleX/comments/737foz/tip_if_you_use_jackett_for_indexers_you_can_set_a/)
 
-### Torrents
-
-Configure and start Deluge, then add a new Deluge download client to Sonarr
-
+Configure and start Deluge, then add a new Deluge download client to Sonarr.
 The hostname to enter is `deluge-api` and the port is `80`.
 
