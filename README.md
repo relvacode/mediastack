@@ -1,33 +1,94 @@
-# mediastack
+# Relva Media Stack
 
-[Sonarr](https://hub.docker.com/r/linuxserver/sonarr/), [Radarr](https://hub.docker.com/r/linuxserver/radarr/) and [Plex PMS](https://hub.docker.com/r/plexinc/pms-docker/) media server docker-compose stacks. 
+An all-in-one Docker compose media server for internet based hosting
 
 ## Features
 
-  - All web applications protected by OAuth2 (such as Google accounts)
-  - SSL terminating proxy with LetsEncrypt certificates
-  - VPN enabled Deluge client
+  - Traefik for SSL termination with LetsEncrypt certificates
+  - All applications protected by OAuth2 authentication (such as Google accounts)
+  - Log forwarding to Kibana
+  - VPN for private Deluge and Jackett communication
   
-## Files
 
-These stacks assume that all media and torrent data is stored in `/var/lib/ds`.
+## Media Applications
 
-All applicaition data is stored in `/var/lib/docker/persistence`.
+  - [Plex](https://hub.docker.com/r/plexinc/pms-docker/) for your own personal Netflix
+  - [Sonarr](#sonarr-and-radarr) for managing your TV shows
+  - [Radarr](#sonarr-and-radarr) for managing your movies
+  - [Deluge](https://hub.docker.com/r/linuxserver/deluge/) for downloading torrents
+  - [Jackett](https://hub.docker.com/r/linuxserver/jackett/) for searching torrents
   
-## Web
+## Extra Applications
+
+  - [Minio](https://www.minio.io/) for accessing your files remotely
+  - [OpenVPN Client](https://github.com/dperson/openvpn-client) for private downloads
+
+
+## Setup
 
 ### SSL Proxy
 
-The environment variable `VIRTUAL_HOST` tells the SSL proxy what DNS domain to host each application on
+Configure traefik by adding your [configuration file](https://docs.traefik.io/basics/) to `ssl/traefik/traefik.toml`.
+Then start traefik using
 
 ```
-VIRTUAL_HOST=sonarr.myserver.com docker-compose up
+docker-compose up -d
 ```
 
-Each application needs its own subdomain to work on, the easiest way to achieve this is to add a wildcard DNS entry for your server and proxy each application to your subdomain of choice. SSL certificates for that domain will be signed automatically.
+### Environment Variables
+
+For each application the environment variable `VIRTUAL_HOST` is expected which instructs traefik what url host to serve that application on. 
+Define the virtual host when starting the application stack with
+
+```
+cd sonarr
+VIRTUAL_HOST=sonarr.example.org docker-compose up -d
+```
 
 ### Oauth
 
 Each application comes bundled with [oauth2_proxy](https://hub.docker.com/r/a5huynh/oauth2_proxy/) for authentication using providers like Google which allows multiple users to login to your server using just their Google account.
 
-A configuration file is expected on the host in `/var/lib/docker/persistence/oauth/oauth2_proxy.cfg` an example configuration file can be found [here](https://github.com/bitly/oauth2_proxy/blob/master/contrib/oauth2_proxy.cfg.example).
+  - Add your [oauth2_proxy.cfg](https://github.com/bitly/oauth2_proxy/blob/master/contrib/oauth2_proxy.cfg.example) to `oauth/oauth2_proxy.cfg`
+  - Add your list of e-mails to `oauth/users/emails.txt`
+  - Run `docker-compose -f oauth-service.yml build` to build the oauth image shared by all applications
+  
+### Telemetry
+
+A built-in ELK stack is provided that uses the Docker `gelf` driver to forward the logs from each oauth container to a Kibana frontend.
+Start the telemetry stack using:
+
+```
+cd telemetry
+VIRTUAL_HOST=telemetry.example.org docker-compose up -d --build
+```
+
+## [Sonarr](https://hub.docker.com/r/linuxserver/sonarr/) and [Radarr](https://hub.docker.com/r/linuxserver/radarr/)
+
+> Replace the below with `radarr` to setup Radarr as well
+
+__Config data__ goes in `/var/lib/docker/persistence/sonarr`
+
+__TV Shows__ in `/var/lib/ds/tvshows`
+
+__Torrent Data__ in `/var/lib/ds/torrent`
+
+```
+cd sonarr
+VIRTUAL_HOST=sonarr.example.org docker-compose up -d
+```
+
+### Indexers
+
+Start Jackett and add a new Torznab indexer to Sonarr 
+
+The hostname you need to enter is `http://jackett-api` and the port is `80`.
+
+You can add all Jackett sites as one Sonarr indexer using [this method](https://www.reddit.com/r/PleX/comments/737foz/tip_if_you_use_jackett_for_indexers_you_can_set_a/)
+
+### Torrents
+
+Configure and start Deluge, then add a new Deluge download client to Sonarr
+
+The hostname to enter is `deluge-api` and the port is `80`.
+
