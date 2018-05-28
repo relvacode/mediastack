@@ -1,4 +1,8 @@
 version: '2'
+networks:
+  http:
+    external: true
+
 services:
   oauth:
     build: .
