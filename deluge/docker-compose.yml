@@ -1,7 +1,9 @@
 version: '2'
 networks:
-  default:
-
+  torrent:
+    external: true
+  http:
+    external: true
 services:
   vpn:
     image: dperson/openvpn-client
@@ -13,8 +15,6 @@ services:
       - NET_ADMIN
     devices:
       - /dev/net/tun
-    networks:
-      - default
     volumes:
       - /dev/net:/dev/net:z
       - /var/lib/docker/persistence/vpn:/vpn
@@ -33,22 +33,15 @@ services:
     - /var/lib/docker/persistence/deluge:/config
     - /var/lib/ds/torrent:/var/lib/ds/torrent
     tty: true
-  proxy:
+  deluge-api:
     image: dperson/nginx
     depends_on:
       - deluge
-    environment:
-      VIRTUAL_HOST: ${VIRTUAL_HOST}
-      LETSENCRYPT_HOST: ${VIRTUAL_HOST}
-      LETSENCRYPT_EMAIL: ${LETSENCRYPT_EMAIL}
-      VIRTUAL_PORT: '80'
-      SSL_POLICY: AWS-TLS-1-2-2017-01
-    expose:
-      - 80
     links:
       - vpn:deluge
     networks:
       - default
+      - torrent
     tmpfs:
       - /run
       - /tmp
@@ -56,3 +49,45 @@ services:
     restart: unless-stopped
     tty: true
     command: -w "http://deluge:8112;/"
+  jackett:
+    image: linuxserver/jackett
+    environment:
+      TZ: Europe/London
+    depends_on:
+      - vpn
+    network_mode: "service:vpn"
+    volumes:
+    - /var/lib/docker/persistence/jackett:/config
+    tty: true
+  jackett-api:
+    image: dperson/nginx
+    depends_on:
+      - jackett
+    links:
+      - vpn:jackett
+    networks:
+      - default
+      - torrent
+    tmpfs:
+      - /run
+      - /tmp
+      - /var/cache/nginx
+    restart: unless-stopped
+    tty: true
+    command: -w "http://jackett:9117;/"
+  deluge-oauth:
+    extends:
+      file: ../oauth/oauth-service.yml
+      service: oauth
+    labels:
+      traefik.frontend.rule: "Host:${DELUGE_VIRTUAL_HOST}"
+    command:
+      - http://deluge-api:80
+  jackett-oauth:
+    extends:
+      file: ../oauth/oauth-service.yml
+      service: oauth
+    labels:
+      traefik.frontend.rule: "Host:${JACKETT_VIRTUAL_HOST}"
+    command:
+      - http://jackett-api:80

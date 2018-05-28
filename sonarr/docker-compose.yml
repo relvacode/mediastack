@@ -1,8 +1,9 @@
 version: '2'
 networks:
-  deluge:
-    external:
-      name: deluge_default
+  torrent:
+    external: true
+  http:
+    external: true
 services:
   sonarr:
     image: linuxserver/sonarr
@@ -12,7 +13,7 @@ services:
       TZ: Europe/London
     networks:
       - default
-      - deluge
+      - torrent
     volumes:
     - /var/lib/docker/persistence/sonarr:/config
     - /var/lib/ds/tvshows:/tv

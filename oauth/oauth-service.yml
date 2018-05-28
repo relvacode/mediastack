@@ -4,16 +4,19 @@ services:
     build: .
     image: mediastack/oauth
     tty: true
-    environment:
-    - VIRTUAL_HOST=${VIRTUAL_HOST}
-    - LETSENCRYPT_HOST=${VIRTUAL_HOST}
-    - LETSENCRYPT_EMAIL=${LETSENCRYPT_EMAIL}
-    - VIRTUAL_PORT=80
-    - SSL_POLICY=${SSL_POLICY}
+    volumes:
+      - ./users:/config/users
     logging:
       driver: gelf
       options:
         gelf-address: "udp://127.0.0.1:12201"
+    networks:
+      - default
+      - http
+    labels:
+      traefik.enable: "true"
+      traefik.port: "80"
+      traefik.frontend.rule: "Host:${VIRTUAL_HOST}"
+      traefik.docker.network: http
     command:
-    - -upstream=http://jackett:9117
     - -config=/config/oauth2_proxy.cfg

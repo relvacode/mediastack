@@ -1,13 +1,19 @@
 version: '2'
+networks:
+  http:
+   external: true
 services:
   minio:
     image: minio/minio
+    labels:
+      traefik.enable: "true"
+      traefik.frontend.rule: "HostRegexp:{subdomain:.+}.${MINIO_DOMAIN},${MINIO_DOMAIN}"
+      traefik.domain: ${MINIO_DOMAIN}
+      traefik.port: "9000"
     environment:
-    - VIRTUAL_HOST=${VIRTUAL_HOST}
-    - LETSENCRYPT_HOST=${VIRTUAL_HOST}
-    - LETSENCRYPT_EMAIL=${LETSENCRYPT_EMAIL}
-    - VIRTUAL_PORT=9000
-    - SSL_POLICY=AWS-TLS-1-2-2017-01
+    - MINIO_DOMAIN=${MINIO_DOMAIN}
+    networks:
+      - http
     volumes:
     - /var/lib/ds:/var/lib/ds
     - /var/lib/docker/persistence/minio:/root/.minio

@@ -1,8 +1,9 @@
 version: '2'
 networks:
-  deluge:
-    external:
-      name: deluge_default
+  torrent:
+    external: true
+  http:
+    external: true
 services:
   radarr:
     image: linuxserver/radarr
@@ -11,13 +12,12 @@ services:
       PGID: '1005'
     networks:
     - default
-    - deluge
+    - torrent
     volumes:
     - /var/lib/docker/persistence/radarr:/config
-    - /var/lib/ds/movies:/movies
+    - /var/lib/ds/movies:/var/lib/ds/movies
     - /var/lib/ds/torrent:/var/lib/ds/torrent
     tty: true
-  oauth:
   oauth:
     extends:
       file: ../oauth/oauth-service.yml

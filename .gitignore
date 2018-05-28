@@ -1,4 +1,6 @@
 */env
 globals
 oauth/oauth2_proxy.cfg
-oauth/emails.txt
+oauth/users/emails.txt
+ssl/traefik/traefik.toml
+
