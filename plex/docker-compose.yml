@@ -17,6 +17,7 @@ services:
     - /var/lib/ds/transcode:/tmp
     - /var/lib/ds/movies:/var/lib/ds/movies
     - /var/lib/ds/tvshows:/var/lib/ds/tvshows
+    - /var/lib/ds/music:/var/lib/ds/music
   tautulli:
     image: shiggins8/tautulli
     environment:
@@ -32,5 +33,5 @@ services:
       file: ../oauth/oauth-service.yml
       service: oauth
     command:
-      - -upstream=http://tautulli:8181
+      - http://tautulli:8181
       - -skip-auth-regex=^/image/|/newsletter/
