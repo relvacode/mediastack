@@ -19,14 +19,14 @@ services:
     - /var/lib/ds/tvshows:/var/lib/ds/tvshows
     - /var/lib/ds/music:/var/lib/ds/music
   tautulli:
-    image: shiggins8/tautulli
+    image: tautulli/tautulli
     environment:
       TZ: Europe/London
       PUID: '1003'
       PGID: '1005'
     volumes:
     - /var/lib/docker/persistence/tautulli:/config
-    - /var/lib/plexmediaserver/Library/Application Support/Plex Media Server/Logs:/logs:ro
+    - /var/lib/plexmediaserver/Library/Application Support/Plex Media Server/Logs:/plex_logs:ro
     tty: true
   oauth:
     extends:
