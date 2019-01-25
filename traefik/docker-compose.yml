@@ -1,9 +1,14 @@
 version: '2'
 
+networks:
+  http:
+    external: true
+
 services:
   traefik:
     image: traefik
     command: --api --docker -c /opt/traefik/traefik.toml
+    restart: always
     networks:
       - http
     ports:
@@ -14,8 +19,5 @@ services:
       DO_AUTH_TOKEN: ${DO_AUTH_TOKEN}
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - ./traefik:/opt/traefik
-
-networks:
-  http:
-    external: true
+      - /docker/traefik/traefik.toml:/traefik.toml
+      - /docker/traefik/acme.json:/opt/traefik/acme.json

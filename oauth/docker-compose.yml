@@ -2,7 +2,6 @@ version: '2'
 networks:
   http:
     external: true
-
 services:
   oauth:
     build: .
@@ -10,17 +9,14 @@ services:
     tty: true
     volumes:
       - ./users:/config/users
-    logging:
-      driver: gelf
-      options:
-        gelf-address: "udp://127.0.0.1:12201"
+    restart: on-failure
     networks:
       - default
       - http
     labels:
       traefik.enable: "true"
-      traefik.port: "80"
+      traefik.port: "9000"
+      traefik.docker.network: "http"
       traefik.frontend.rule: "Host:${VIRTUAL_HOST}"
-      traefik.docker.network: http
     command:
     - -config=/config/oauth2_proxy.cfg

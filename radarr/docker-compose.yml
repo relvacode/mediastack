@@ -4,23 +4,27 @@ networks:
     external: true
   http:
     external: true
+  emby:
+    external: true
 services:
   radarr:
     image: linuxserver/radarr
+    restart: always
     environment:
-      PUID: '1003'
-      PGID: '1005'
+      PUID: '1000'
+      PGID: '1000'
     networks:
     - default
     - torrent
+    - emby
     volumes:
-    - /var/lib/docker/persistence/radarr:/config
-    - /var/lib/ds/movies:/var/lib/ds/movies
-    - /var/lib/ds/torrent:/var/lib/ds/torrent
+    - /docker/radarr:/config
+    - /ds/movies:/movies
+    - /ds/torrent:/ds/torrent
     tty: true
   oauth:
     extends:
-      file: ../oauth/oauth-service.yml
+      file: ../oauth/docker-compose.yml
       service: oauth
     command:
       - http://radarr:7878

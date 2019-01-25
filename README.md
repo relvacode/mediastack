@@ -58,30 +58,15 @@ To configure and build your oauth image:
   
     ```
     cd oauth
-    docker-compose -f oauth-service.yml build
+    docker-compose build --pull
     ```  
-You need to rebuild your image every time you update the configuration.
-The provided service in [oauth](oauth/oauth-service.yml) uses the `gelf` logging driver so no logging for those services will be available from the console. 
 
-### Telemetry
+### Helper Scripts
 
-A built-in ELK stack is provided that uses the Docker `gelf` driver to forward the logs from each oauth container to a Kibana frontend.
-Start the telemetry stack using
+Checkout this directory somewhere, then add this to your `~/.bashrc`
 
 ```
-cd telemetry
-VIRTUAL_HOST=telemetry.example.org docker-compose up -d --build
-```
-
-You can configure your own pipeline for Logstash in [telemetry/logstash/pipeline.conf](telemetry/logstash/pipeline.conf). Use Kibana at `VIRTUAL_HOST` to filter and visualise your access logs. To find messages that aren't access logs use the `_grokparsefailure` tag.
-
-### Helper Script
-
-This repository provides a helpful shell script that wraps execution of docker compose.
-Checkout this directory to `/var/lib/docker-compose` and then add this to either your `~/.bashrc` or `~/.zshrc`
-
-```
-source /var/lib/docker-compose/_system/zshrc
+source <checkout_directory>/compose.sh
 ```
 
 Now from anywhere on your file system you can call
@@ -93,7 +78,7 @@ compose ssl up -d
 compose sonarr logs
 ```
 
-You can also place an [env](sonarr/env) file in the application directory to load environment variables for that application
+Place an [env](sonarr/env) file in each stack to source environment variables
 
 ## Stacks
 
@@ -103,10 +88,10 @@ You can also place an [env](sonarr/env) file in the application directory to loa
 
 | What | Where |
 | ---- | ----- |
-| Config | `/var/lib/docker/persistence/sonarr` |
-| TV Shows | `/var/lib/ds/tvshows` |
-| Movies | `/var/lib/ds/movies` |
-| Torrents | `/var/lib/ds/torrent` |
+| Config | `/docker/sonarr` |
+| TV Shows | `/ds/tvshows` |
+| Movies | `/ds/movies` |
+| Torrents | `/ds/torrent` |
 
 ```
 cd sonarr

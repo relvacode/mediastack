@@ -1,0 +1,9 @@
+version: '2'
+services:
+  denyhosts:
+    image: adriel/denyhosts
+    restart: always
+    volumes:
+      - /var/log/secure:/var/log/secure:ro
+      - /etc/hosts.deny:/etc/hosts.deny
+      - ./denyhosts/denyhosts.conf:/etc/denyhosts.conf:ro

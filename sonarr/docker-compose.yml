@@ -1,26 +1,32 @@
 version: '2'
+
 networks:
   torrent:
     external: true
   http:
     external: true
+  emby:
+    external: true
+
 services:
   sonarr:
-    image: linuxserver/sonarr
+    image: lsiodev/sonarr-preview
+    restart: always
     environment:
-      PUID: '1003'
-      PGID: '1005'
+      PUID: '1000'
+      PGID: '1000'
       TZ: Europe/London
     networks:
       - default
       - torrent
+      - emby
     volumes:
-    - /var/lib/docker/persistence/sonarr:/config
-    - /var/lib/ds/tvshows:/tv
-    - /var/lib/ds/torrent:/var/lib/ds/torrent
+    - /docker/sonarr:/config
+    - /ds/tvshows:/tv
+    - /ds/torrent:/ds/torrent
   oauth:
     extends:
-      file: ../oauth/oauth-service.yml
+      file: ../oauth/docker-compose.yml
       service: oauth
     command:
       - http://sonarr:8989
