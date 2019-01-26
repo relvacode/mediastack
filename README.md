@@ -4,9 +4,8 @@ An all-in-one Docker compose media server for internet based hosting
 
 ## Features
 
-  - Traefik for SSL termination with LetsEncrypt certificates
-  - All applications protected by OAuth2 authentication (such as Google accounts)
-  - Log forwarding to Kibana
+  - SSL termination with LetsEncrypt certificates
+  - OAuth2 authentication (such as Google accounts)
   - VPN for private Deluge and Jackett communication
   
 
@@ -20,7 +19,7 @@ An all-in-one Docker compose media server for internet based hosting
   
 #### Extra
 
-  - [Minio](https://www.minio.io/) for accessing your files remotely
+  - [Minio](https://www.minio.io/) for accessing your files remotely using S3 protocol
   - [Tautulli](https://hub.docker.com/r/linuxserver/tautulli/) for monitoring Plex
 
 
@@ -68,6 +67,12 @@ entryPoint = "https"
 provider = "digitalocean"
 [[acme.domains]]
   main = "*.<your_domain>"
+```
+
+Create the `http` network which traefik will use to proxy http services
+
+```
+docker network create http
 ```
 
 Then start traefik using
