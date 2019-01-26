@@ -18,7 +18,7 @@ An all-in-one Docker compose media server for internet based hosting
   - [Deluge](https://hub.docker.com/r/linuxserver/deluge/) for downloading torrents
   - [Jackett](https://hub.docker.com/r/linuxserver/jackett/) for searching torrents
   
-### Extra
+#### Extra
 
   - [Minio](https://www.minio.io/) for accessing your files remotely
   - [Tautulli](https://hub.docker.com/r/linuxserver/tautulli/) for monitoring Plex
@@ -26,15 +26,61 @@ An all-in-one Docker compose media server for internet based hosting
 
 ## Setup
 
-### SSL Proxy
+### Traefik SSL Proxy
 
-Configure traefik by adding your [configuration file](https://docs.traefik.io/basics/) to `ssl/traefik/traefik.toml`.
+Configure traefik by adding your [configuration file](https://docs.traefik.io/basics/) to `/docker/traefik/traefik.toml`.
+
+My configuration looks like this
+
+```
+debug = false
+
+logLevel = "INFO"
+defaultEntryPoints = ["https","http"]
+
+[entryPoints]
+  [entryPoints.http]
+  address = ":80"
+    [entryPoints.http.redirect]
+    entryPoint = "https"
+  [entryPoints.https]
+  address = ":443"
+  [entryPoints.https.tls]
+  minVersion = "VersionTLS12"
+  cipherSuites = [
+        "TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256",
+        "TLS_RSA_WITH_AES_256_GCM_SHA384"
+       ]
+
+[retry]
+
+[docker]
+endpoint = "unix:///var/run/docker.sock"
+domain = "<your_domain>"
+watch = true
+exposedByDefault = false
+
+[acme]
+email = "<your_email>"
+storage = "/opt/traefik/acme.json"
+entryPoint = "https"
+[acme.dnsChallenge]
+provider = "digitalocean"
+[[acme.domains]]
+  main = "*.<your_domain>"
+```
+
 Then start traefik using
 
 ```
-cd ssl
+cd traefik
 docker-compose up -d
 ```
+
+My configuration is using `dns` chanellenge which means I need to provide `DO_AUTH_TOKEN` when starting the Trafeik container. 
+See [acme configuration](https://docs.traefik.io/configuration/acme/) to find out more.
+
+I am using strong TLS cipher suites which may not be supported by legacy web browsers.
 
 #### Virtual Host
 
@@ -48,7 +94,7 @@ VIRTUAL_HOST=sonarr.example.org docker-compose up -d
 
 ### OAuth
 
-Each application comes bundled with an [oauth2_proxy](https://hub.docker.com/r/a5huynh/oauth2_proxy/) authentication layer for providers like Google. This is not only useful to protect your applications against the internet but also to allow friends or family to login using their own credentials and monitor usage from the telemetry stack.
+Each application comes bundled with an [oauth2_proxy](https://hub.docker.com/r/a5huynh/oauth2_proxy/) authentication layer for providers like Google. This is not only useful to protect your applications against the internet but also to allow friends or family to login using their own credentials.
 
 To configure and build your oauth image:
 
@@ -61,24 +107,6 @@ To configure and build your oauth image:
     docker-compose build --pull
     ```  
 
-### Helper Scripts
-
-Checkout this directory somewhere, then add this to your `~/.bashrc`
-
-```
-source <checkout_directory>/compose.sh
-```
-
-Now from anywhere on your file system you can call
-
-```
-compose <stack> <action>
-
-compose ssl up -d
-compose sonarr logs
-```
-
-Place an [env](sonarr/env) file in each stack to source environment variables
 
 ## Stacks
 
