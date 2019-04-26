@@ -97,20 +97,13 @@ cd sonarr
 VIRTUAL_HOST=sonarr.example.org docker-compose up -d
 ```
 
+Or add it to a `.env` file in each stack directory.
+
 ### OAuth
 
-Each application comes bundled with an [oauth2_proxy](https://hub.docker.com/r/a5huynh/oauth2_proxy/) authentication layer for providers like Google. This is not only useful to protect your applications against the internet but also to allow friends or family to login using their own credentials.
+Each webapp comes with [oauth2_proxy](https://github.com/pusher/oauth2_proxy) to use Google authentication based on a list of valid e-mail addresses. 
 
-To configure and build your oauth image:
-
-  - Add your [oauth2_proxy.cfg](https://github.com/bitly/oauth2_proxy/blob/master/contrib/oauth2_proxy.cfg.example) to `oauth/oauth2_proxy.cfg`
-  - Add your list of e-mails to `oauth/users/emails.txt`
-  - Run this command below to build the oauth image shared by all applications
-  
-    ```
-    cd oauth
-    docker-compose build --pull
-    ```  
+Add your list of allowed Google Mail users to `/docker/auth/emails.txt` in the host directory.
 
 
 ## Stacks
@@ -131,10 +124,9 @@ cd sonarr
 VIRTUAL_HOST=sonarr.example.org docker-compose up -d
 ```
 
-Start and configure Jackett, then add a new Torznab indexer to Sonarr. 
-The hostname you need to enter is `jackett-api` and the port is `80`.
-You can add all Jackett sites as one Sonarr indexer using [this method](https://www.reddit.com/r/PleX/comments/737foz/tip_if_you_use_jackett_for_indexers_you_can_set_a/)
+Start and configure Jackett, then add a new Torznab indexer to Sonarr/Radarr. 
+The URL and API Key to use for Jackett is `http://jackett-api:9117/torznab/all/` more details can be found in [this](https://www.reddit.com/r/PleX/comments/737foz/tip_if_you_use_jackett_for_indexers_you_can_set_a/) reddit post.
 
-Configure and start Deluge, then add a new Deluge download client to Sonarr.
-The hostname to enter is `deluge-api` and the port is `80`.
+Configure and start Deluge, then add a new Deluge download client to Sonarr/Radarr.
+The hostname to enter is `deluge-api` and the port is `8112`.
 

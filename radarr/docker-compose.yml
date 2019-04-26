@@ -1,11 +1,11 @@
 version: '2'
+
 networks:
   torrent:
     external: true
   http:
     external: true
-  emby:
-    external: true
+
 services:
   radarr:
     image: linuxserver/radarr
@@ -13,15 +13,14 @@ services:
     environment:
       PUID: '1000'
       PGID: '1000'
+      TZ: Europe/London
     networks:
     - default
     - torrent
-    - emby
     volumes:
     - /docker/radarr:/config
     - /ds/movies:/movies
     - /ds/torrent:/ds/torrent
-    tty: true
   oauth:
     extends:
       file: ../oauth/docker-compose.yml

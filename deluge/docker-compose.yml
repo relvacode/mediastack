@@ -37,7 +37,7 @@ services:
     - /ds/torrent:/ds/torrent
     tty: true
   deluge-api:
-    image: dperson/nginx
+    image: hpello/tcp-proxy
     depends_on:
       - deluge
     links:
@@ -45,13 +45,8 @@ services:
     networks:
       - default
       - torrent
-    tmpfs:
-      - /run
-      - /tmp
-      - /var/cache/nginx
+    command: deluge 8112
     restart: unless-stopped
-    tty: true
-    command: -w "http://deluge:8112;/"
   jackett:
     image: linuxserver/jackett
     environment:
@@ -66,7 +61,7 @@ services:
     restart: unless-stopped
     tty: true
   jackett-api:
-    image: dperson/nginx
+    image: hpello/tcp-proxy
     depends_on:
       - jackett
     links:
@@ -74,13 +69,8 @@ services:
     networks:
       - default
       - torrent
-    tmpfs:
-      - /run
-      - /tmp
-      - /var/cache/nginx
     restart: unless-stopped
-    tty: true
-    command: -w "http://jackett:9117;/"
+    command: jackett 9117
   deluge-oauth:
     extends:
       file: ../oauth/docker-compose.yml
@@ -88,7 +78,7 @@ services:
     labels:
       traefik.frontend.rule: "Host:${DELUGE_VIRTUAL_HOST}"
     command:
-      - http://deluge-api:80
+      - http://deluge-api:8112
   jackett-oauth:
     extends:
       file: ../oauth/docker-compose.yml
@@ -96,4 +86,4 @@ services:
     labels:
       traefik.frontend.rule: "Host:${JACKETT_VIRTUAL_HOST}"
     command:
-      - http://jackett-api:80
+      - http://jackett-api:9117

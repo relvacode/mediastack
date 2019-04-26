@@ -4,19 +4,24 @@ networks:
     external: true
 services:
   oauth:
-    build: .
-    image: mediastack/oauth
-    tty: true
+    image: quay.io/pusher/oauth2_proxy
     volumes:
-      - ./users:/config/users
+      - /docker/auth:/config/
     restart: on-failure
     networks:
       - default
       - http
+    env_file: ./.env
+    environment:
+      OAUTH2_PROXY_SKIP_PROVIDER_BUTTON: "true"
+      OAUTH2_PROXY_APPROVAL_PROMPT: auto
     labels:
       traefik.enable: "true"
       traefik.port: "9000"
       traefik.docker.network: "http"
       traefik.frontend.rule: "Host:${VIRTUAL_HOST}"
-    command:
-    - -config=/config/oauth2_proxy.cfg
+    entrypoint:
+      - /bin/oauth2_proxy
+      - --http-address=0.0.0.0:9000
+      - --authenticated-emails-file=/config/emails.txt
+      - --upstream

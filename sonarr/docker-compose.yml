@@ -5,8 +5,6 @@ networks:
     external: true
   http:
     external: true
-  emby:
-    external: true
 
 services:
   sonarr:
@@ -19,7 +17,6 @@ services:
     networks:
       - default
       - torrent
-      - emby
     volumes:
     - /docker/sonarr:/config
     - /ds/tvshows:/tv
