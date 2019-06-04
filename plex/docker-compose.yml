@@ -14,11 +14,17 @@ services:
     restart: always
     ports:
      - 32400:32400
+    devices:
+    - /dev/dri/card0:/dev/dri/card0
+    - /dev/dri/renderD128:/dev/dri/renderD128
+    tmpfs:
+    - /transcode
     volumes:
     - /docker/plex:/config
     - /tmp
     - /ds/movies:/ds/movies
     - /ds/tvshows:/ds/tvshows
+    - /ds/livetv:/ds/livetv
   tautulli:
     image: tautulli/tautulli
     restart: unless-stopped
