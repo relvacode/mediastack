@@ -6,12 +6,14 @@ networks:
 
 services:
   media-server:
+    extends:
+      file: ../base/docker-compose.yml
+      service: application
     image: plexinc/pms-docker
     environment:
       TZ: Europe/London
       PLEX_UID: '1000'
       PLEX_GID: '1000'
-    restart: always
     ports:
      - 32400:32400
     devices:
@@ -26,8 +28,10 @@ services:
     - /ds/tvshows:/ds/tvshows
     - /ds/livetv:/ds/livetv
   tautulli:
+    extends:
+      file: ../base/docker-compose.yml
+      service: application
     image: tautulli/tautulli
-    restart: unless-stopped
     environment:
       TZ: Europe/London
       PUID: '1000'

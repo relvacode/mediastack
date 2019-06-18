@@ -4,10 +4,12 @@ networks:
     external: true
 services:
   oauth:
+    extends:
+      file: ../base/docker-compose.yml
+      service: application
     image: quay.io/pusher/oauth2_proxy
     volumes:
       - /docker/auth:/config/
-    restart: on-failure
     networks:
       - default
       - http

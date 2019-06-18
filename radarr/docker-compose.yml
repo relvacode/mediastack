@@ -8,8 +8,10 @@ networks:
 
 services:
   radarr:
+    extends:
+      file: ../base/docker-compose.yml
+      service: application
     image: linuxserver/radarr
-    restart: always
     environment:
       PUID: '1000'
       PGID: '1000'
