@@ -89,15 +89,16 @@ I am using strong TLS cipher suites which may not be supported by legacy web bro
 
 #### Virtual Host
 
-For each application to serve over HTTP/HTTPS the environment variable `VIRTUAL_HOST` is expected which instructs traefik what url host to serve that application on. 
-Define the virtual host when starting the application stack with
+For each application to serve over HTTP/HTTPS the environment variable `VIRTUAL_HOST` is expected which instructs traefik what url host to serve that application on.
+
+The best way to achieve this is by creating `.env` files in the stack directory.
+
+You can also define the virtual host when starting the application stack with
 
 ```
 cd sonarr
 VIRTUAL_HOST=sonarr.example.org docker-compose up -d
 ```
-
-Or add it to a `.env` file in each stack directory.
 
 ### OAuth
 
@@ -121,7 +122,8 @@ Add your list of allowed Google Mail users to `/docker/auth/emails.txt` in the h
 
 ```
 cd sonarr
-VIRTUAL_HOST=sonarr.example.org docker-compose up -d
+echo "VIRTUAL_HOST=sonarr.example.org" > .env
+docker-compose up -d
 ```
 
 Start and configure Jackett, then add a new Torznab indexer to Sonarr/Radarr. 
