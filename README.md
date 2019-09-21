@@ -12,6 +12,7 @@ An all-in-one Docker compose media server for internet based hosting
 ### Applications
 
   - [Plex](https://hub.docker.com/r/plexinc/pms-docker/) for your own personal Netflix
+  - [Tautulli](https://hub.docker.com/r/linuxserver/tautulli/) for monitoring Plex usage
   - [Sonarr](#sonarr-and-radarr) for managing your TV shows
   - [Radarr](#sonarr-and-radarr) for managing your movies
   - [Deluge](https://hub.docker.com/r/linuxserver/deluge/) for downloading torrents
@@ -20,16 +21,16 @@ An all-in-one Docker compose media server for internet based hosting
 #### Extra
 
   - [Minio](https://www.minio.io/) for accessing your files remotely using S3 protocol
-  - [Tautulli](https://hub.docker.com/r/linuxserver/tautulli/) for monitoring Plex
+  - [DenyHosts](http://denyhosts.sourceforge.net/) for protecting your server against repeated break-in attempts over SSH
 
 
 ## Setup
 
-### Traefik SSL Proxy
+### Traefik v1.7 SSL Proxy
 
-Configure traefik by adding your [configuration file](https://docs.traefik.io/basics/) to `/docker/traefik/traefik.toml`.
+Traefik acts as a proxy to all of your applications. It can generate SSL certificates and knows how to proxy to your applications by inspecting Docker.
 
-My configuration looks like this
+Configure Traefik by adding this example configuration file `/docker/traefik/traefik.toml`:
 
 ```
 debug = false
@@ -82,14 +83,13 @@ cd traefik
 docker-compose up -d
 ```
 
-My configuration is using `dns` chanellenge which means I need to provide `DO_AUTH_TOKEN` when starting the Trafeik container. 
-See [acme configuration](https://docs.traefik.io/configuration/acme/) to find out more.
+This example is using `dns` chanellenge which means I need to provide `DO_AUTH_TOKEN` when starting the Trafeik container
 
-I am using strong TLS cipher suites which may not be supported by legacy web browsers.
+This example uses strong TLS cipher suites which may not be supported by legacy web browsers.
 
 #### Virtual Host
 
-For each application to serve over HTTP/HTTPS the environment variable `VIRTUAL_HOST` is expected which instructs traefik what url host to serve that application on.
+Each compose stack needs to have the environment variable `VIRTUAL_HOST` defined when starting the stack. It tells Traefik what hostname to serve the application on.
 
 The best way to achieve this is by creating `.env` files in the stack directory.
 
@@ -102,12 +102,30 @@ VIRTUAL_HOST=sonarr.example.org docker-compose up -d
 
 ### OAuth
 
-Each webapp comes with [oauth2_proxy](https://github.com/pusher/oauth2_proxy) to use Google authentication based on a list of valid e-mail addresses. 
+Each application is protected Google authentication using [oauth2_proxy](https://github.com/pusher/oauth2_proxy).
 
-Add your list of allowed Google Mail users to `/docker/auth/emails.txt` in the host directory.
+Add your list of allowed Google Mail users to `/docker/auth/emails.txt` in the host directory. 
 
+Follow [these instructions](https://pusher.github.io/oauth2_proxy/auth-configuration#google-auth-provider) on how to setup the Google authentication provider.
 
 ## Stacks
+
+#### [Deluge](https://hub.docker.com/r/linuxserver/deluge/) with [VPN](https://hub.docker.com/r/dperson/openvpn-client/)
+
+| What | Where |
+| ---- | ----- |
+| Deluge Config | `/docker/deluge` |
+| VPN Config | `/docker/vpn` |
+| Torrents | `/ds/torrent` |
+
+```
+cd deluge
+echo "DELUGE_VIRTUAL_HOST=deluge.example.org" >> .env
+echo "JACKETT_VIRTUAL_HOST=jackett.example.org" >> .env
+docker-compose up -d
+```
+
+All downloads and tracker searches will use a secure VPN connection. Find the OpenVPN configuration from your VPN provider and place it in `/docker/vpn/vpn.conf`.
 
 ### [Sonarr](https://hub.docker.com/r/linuxserver/sonarr/) and [Radarr](https://hub.docker.com/r/linuxserver/radarr/)
 
@@ -131,4 +149,3 @@ The URL and API Key to use for Jackett is `http://jackett-api:9117/torznab/all/`
 
 Configure and start Deluge, then add a new Deluge download client to Sonarr/Radarr.
 The hostname to enter is `deluge-api` and the port is `8112`.
-
