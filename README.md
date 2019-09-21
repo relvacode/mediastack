@@ -61,7 +61,7 @@ exposedByDefault = false
 
 [acme]
 email = "<your_email>"
-storage = "/opt/traefik/acme.json"
+storage = "/acme.json"
 entryPoint = "https"
 [acme.dnsChallenge]
 provider = "digitalocean"

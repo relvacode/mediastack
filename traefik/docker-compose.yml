@@ -6,7 +6,7 @@ networks:
 
 services:
   traefik:
-    image: traefik
+    image: traefik:v1.7-alpine
     command: --api --docker -c /opt/traefik/traefik.toml
     restart: always
     networks:
@@ -20,4 +20,4 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - /docker/traefik/traefik.toml:/traefik.toml
-      - /docker/traefik/acme.json:/opt/traefik/acme.json
+      - /docker/traefik/acme.json:/acme.json
