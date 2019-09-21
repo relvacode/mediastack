@@ -1,4 +1,4 @@
-version: '2'
+version: '2.1'
 
 networks:
   torrent:
@@ -13,7 +13,6 @@ services:
       service: application
     image: dperson/openvpn-client
     tty: true
-    restart: unless-stopped
     security_opt:
       - label:disable
     cap_add:
@@ -29,7 +28,6 @@ services:
       file: ../base/docker-compose.yml
       service: application
     image: linuxserver/deluge:5b398f77-ls22
-    restart: on-failure
     environment:
       PUID: '1000'
       PGID: '1000'
@@ -55,7 +53,8 @@ services:
       - default
       - torrent
     command: deluge 8112
-    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:8112"]    
   jackett:
     extends:
       file: ../base/docker-compose.yml
@@ -70,7 +69,6 @@ services:
     network_mode: "service:vpn"
     volumes:
       - /docker/jackett:/config
-    restart: unless-stopped
     tty: true
   jackett-api:
     extends:
@@ -84,8 +82,9 @@ services:
     networks:
       - default
       - torrent
-    restart: unless-stopped
     command: jackett 9117
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:9117/UI/Login"]
   deluge-oauth:
     extends:
       file: ../oauth/docker-compose.yml

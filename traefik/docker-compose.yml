@@ -1,4 +1,4 @@
-version: '2'
+version: '2.1'
 
 networks:
   http:
@@ -9,6 +9,8 @@ services:
     image: traefik:v1.7-alpine
     command: --api --docker -c /opt/traefik/traefik.toml
     restart: always
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:8080"]
     networks:
       - http
     ports:

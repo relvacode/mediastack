@@ -1,7 +1,9 @@
-version: '2'
+version: '2.1'
+
 networks:
   http:
     external: true
+
 services:
   oauth:
     extends:
@@ -22,6 +24,8 @@ services:
       traefik.port: "9000"
       traefik.docker.network: "http"
       traefik.frontend.rule: "Host:${VIRTUAL_HOST}"
+    healthcheck:
+        test: ["CMD", "wget", "-q", "--spider", "http://127.0.0.1:9000/ping"]
     entrypoint:
       - /bin/oauth2_proxy
       - --http-address=0.0.0.0:9000
