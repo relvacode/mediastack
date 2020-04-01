@@ -27,7 +27,7 @@ services:
     healthcheck:
         test: ["CMD", "wget", "-q", "--spider", "http://127.0.0.1:9000/ping"]
     entrypoint:
-      - /bin/oauth2_proxy
+      - /bin/oauth2-proxy
       - --http-address=0.0.0.0:9000
       - --authenticated-emails-file=/config/emails.txt
       - --upstream
