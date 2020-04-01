@@ -1,4 +1,4 @@
-version: '2'
+version: '2.1'
 
 networks:
   http:
@@ -16,9 +16,6 @@ services:
       PLEX_GID: '1000'
     ports:
      - 32400:32400
-    devices:
-    - /dev/dri/card0:/dev/dri/card0
-    - /dev/dri/renderD128:/dev/dri/renderD128
     tmpfs:
     - /transcode
     volumes:
