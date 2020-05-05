@@ -90,7 +90,7 @@ services:
       file: ../oauth/docker-compose.yml
       service: oauth
     labels:
-      traefik.frontend.rule: "Host:${DELUGE_VIRTUAL_HOST}"
+      caddy.address: "${DELUGE_VIRTUAL_HOST}"
     command:
       - http://deluge-api:8112
   jackett-oauth:
@@ -98,6 +98,6 @@ services:
       file: ../oauth/docker-compose.yml
       service: oauth
     labels:
-      traefik.frontend.rule: "Host:${JACKETT_VIRTUAL_HOST}"
+      caddy.address: "${JACKETT_VIRTUAL_HOST}"
     command:
       - http://jackett-api:9117

@@ -1,0 +1,22 @@
+
+version: "2.1"
+
+networks:
+  http:
+    external: true
+
+services:
+  caddy:
+    image: lucaslorentz/caddy-docker-proxy
+    ports:
+      - '80:80'
+      - '443:443'
+    networks:
+      - http
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /docker/caddy:/root/.caddy
+    command:
+      - -email
+      - '${CADDY_EMAIL}'
+      - -agree=true

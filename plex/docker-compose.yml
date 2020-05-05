@@ -43,4 +43,4 @@ services:
       service: oauth
     command:
       - http://tautulli:8181
-      - -skip-auth-regex=^/image/|/newsletter/
+      - --skip-auth-regex=^/image/|/newsletter/

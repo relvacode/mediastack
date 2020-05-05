@@ -20,14 +20,13 @@ services:
       OAUTH2_PROXY_SKIP_PROVIDER_BUTTON: "true"
       OAUTH2_PROXY_APPROVAL_PROMPT: auto
     labels:
-      traefik.enable: "true"
-      traefik.port: "9000"
-      traefik.docker.network: "http"
-      traefik.frontend.rule: "Host:${VIRTUAL_HOST}"
+      caddy.targetport: "9000"
+      caddy.address: "${VIRTUAL_HOST}"
     healthcheck:
         test: ["CMD", "wget", "-q", "--spider", "http://127.0.0.1:9000/ping"]
     entrypoint:
       - /bin/oauth2-proxy
       - --http-address=0.0.0.0:9000
+      - --reverse-proxy
       - --authenticated-emails-file=/config/emails.txt
       - --upstream

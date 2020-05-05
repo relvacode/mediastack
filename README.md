@@ -17,79 +17,39 @@ An all-in-one Docker compose media server for internet based hosting
   - [Deluge](https://hub.docker.com/r/linuxserver/deluge/) for downloading torrents
   - [Jackett](https://hub.docker.com/r/linuxserver/jackett/) for searching torrents
   
-#### Extra
+#### Extras
 
-  - [Minio](https://www.minio.io/) for accessing your files remotely using S3 protocol
   - [Tautulli](https://hub.docker.com/r/linuxserver/tautulli/) for monitoring Plex
 
 
 ## Setup
 
-### Traefik SSL Proxy
+### Caddy
 
-Configure traefik by adding your [configuration file](https://docs.traefik.io/basics/) to `/docker/traefik/traefik.toml`.
+Caddy is an HTTP proxy, it is used to direct incoming SSL encrypted web traffic to the correct Docker container based on the requested hostname.
 
-My configuration looks like this
-
-```
-debug = false
-
-logLevel = "INFO"
-defaultEntryPoints = ["https","http"]
-
-[entryPoints]
-  [entryPoints.http]
-  address = ":80"
-    [entryPoints.http.redirect]
-    entryPoint = "https"
-  [entryPoints.https]
-  address = ":443"
-  [entryPoints.https.tls]
-  minVersion = "VersionTLS12"
-  cipherSuites = [
-        "TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256",
-        "TLS_RSA_WITH_AES_256_GCM_SHA384"
-       ]
-
-[retry]
-
-[docker]
-endpoint = "unix:///var/run/docker.sock"
-domain = "<your_domain>"
-watch = true
-exposedByDefault = false
-
-[acme]
-email = "<your_email>"
-storage = "/acme.json"
-entryPoint = "https"
-[acme.dnsChallenge]
-provider = "digitalocean"
-[[acme.domains]]
-  main = "*.<your_domain>"
-```
-
-Create the `http` network which traefik will use to proxy http services
+Create the `http` network which Caddy will use to communicate to containers with
 
 ```
 docker network create http
 ```
 
-Then start traefik using
+Then create a `.env` file in [caddy/](caddy/) containing your LetsEncrypt e-mail address
 
 ```
-cd traefik
+CADDY_EMAIL=me@example.org
+```
+
+Then start Caddy using
+
+```
+cd caddy
 docker-compose up -d
 ```
 
-My configuration is using `dns` chanellenge which means I need to provide `DO_AUTH_TOKEN` when starting the Trafeik container. 
-See [acme configuration](https://docs.traefik.io/configuration/acme/) to find out more.
-
-I am using strong TLS cipher suites which may not be supported by legacy web browsers.
-
 #### Virtual Host
 
-For each application to serve over HTTP/HTTPS the environment variable `VIRTUAL_HOST` is expected which instructs traefik what url host to serve that application on.
+Each application needs a `VIRTUAL_HOST` environment variable to tell Caddy what hostname to serve each application on.
 
 The best way to achieve this is by creating `.env` files in the stack directory.
 
@@ -107,7 +67,7 @@ Each webapp comes with [oauth2_proxy](https://github.com/pusher/oauth2_proxy) to
 Add your list of allowed Google Mail users to `/docker/auth/emails.txt` in the host directory.
 
 
-## Stacks
+## Applications
 
 ### [Sonarr](https://hub.docker.com/r/linuxserver/sonarr/) and [Radarr](https://hub.docker.com/r/linuxserver/radarr/)
 
