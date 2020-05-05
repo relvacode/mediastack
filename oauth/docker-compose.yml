@@ -1,0 +1,32 @@
+version: '2.1'
+
+networks:
+  http:
+    external: true
+
+services:
+  oauth:
+    extends:
+      file: ../base/docker-compose.yml
+      service: application
+    image: quay.io/pusher/oauth2_proxy
+    volumes:
+      - /docker/auth:/config/
+    networks:
+      - default
+      - http
+    env_file: ./.env
+    environment:
+      OAUTH2_PROXY_SKIP_PROVIDER_BUTTON: "true"
+      OAUTH2_PROXY_APPROVAL_PROMPT: auto
+    labels:
+      caddy.targetport: "9000"
+      caddy.address: "${VIRTUAL_HOST}"
+    healthcheck:
+        test: ["CMD", "wget", "-q", "--spider", "http://127.0.0.1:9000/ping"]
+    entrypoint:
+      - /bin/oauth2-proxy
+      - --http-address=0.0.0.0:9000
+      - --reverse-proxy
+      - --authenticated-emails-file=/config/emails.txt
+      - --upstream

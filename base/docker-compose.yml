@@ -1,0 +1,10 @@
+version: '2.1'
+
+services:
+  application:
+    restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "25m"
+        max-file: "5"

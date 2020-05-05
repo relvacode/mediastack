@@ -1,14 +1,18 @@
-version: '2'
+version: '2.1'
+
 networks:
   torrent:
     external: true
   http:
     external: true
+
 services:
   vpn:
+    extends:
+      file: ../base/docker-compose.yml
+      service: application
     image: dperson/openvpn-client
     tty: true
-    restart: unless-stopped
     security_opt:
       - label:disable
     cap_add:
@@ -17,24 +21,30 @@ services:
       - /dev/net/tun
     volumes:
       - /dev/net:/dev/net:z
-      - /var/lib/docker/persistence/vpn:/vpn
+      - /docker/vpn:/vpn
     command: -f 8112 -d
   deluge:
-    image: linuxserver/deluge
+    extends:
+      file: ../base/docker-compose.yml
+      service: application
+    image: linuxserver/deluge:5b398f77-ls22
     environment:
-      PUID: '1003'
-      PGID: '1005'
+      PUID: '1000'
+      PGID: '1000'
       TZ: Europe/London
       UMASK_SET: '002'
     depends_on:
       - vpn
     network_mode: "service:vpn"
     volumes:
-    - /var/lib/docker/persistence/deluge:/config
-    - /var/lib/ds/torrent:/var/lib/ds/torrent
+    - /docker/deluge:/config
+    - /ds/torrent:/ds/torrent
     tty: true
   deluge-api:
-    image: dperson/nginx
+    extends:
+      file: ../base/docker-compose.yml
+      service: application
+    image: hpello/tcp-proxy
     depends_on:
       - deluge
     links:
@@ -42,25 +52,29 @@ services:
     networks:
       - default
       - torrent
-    tmpfs:
-      - /run
-      - /tmp
-      - /var/cache/nginx
-    restart: unless-stopped
-    tty: true
-    command: -w "http://deluge:8112;/"
+    command: deluge 8112
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:8112"]    
   jackett:
+    extends:
+      file: ../base/docker-compose.yml
+      service: application
     image: linuxserver/jackett
     environment:
       TZ: Europe/London
+      PUID: 1000
+      PGID: 1000
     depends_on:
       - vpn
     network_mode: "service:vpn"
     volumes:
-    - /var/lib/docker/persistence/jackett:/config
+      - /docker/jackett:/config
     tty: true
   jackett-api:
-    image: dperson/nginx
+    extends:
+      file: ../base/docker-compose.yml
+      service: application
+    image: hpello/tcp-proxy
     depends_on:
       - jackett
     links:
@@ -68,26 +82,22 @@ services:
     networks:
       - default
       - torrent
-    tmpfs:
-      - /run
-      - /tmp
-      - /var/cache/nginx
-    restart: unless-stopped
-    tty: true
-    command: -w "http://jackett:9117;/"
+    command: jackett 9117
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:9117/UI/Login"]
   deluge-oauth:
     extends:
-      file: ../oauth/oauth-service.yml
+      file: ../oauth/docker-compose.yml
       service: oauth
     labels:
-      traefik.frontend.rule: "Host:${DELUGE_VIRTUAL_HOST}"
+      caddy.address: "${DELUGE_VIRTUAL_HOST}"
     command:
-      - http://deluge-api:80
+      - http://deluge-api:8112
   jackett-oauth:
     extends:
-      file: ../oauth/oauth-service.yml
+      file: ../oauth/docker-compose.yml
       service: oauth
     labels:
-      traefik.frontend.rule: "Host:${JACKETT_VIRTUAL_HOST}"
+      caddy.address: "${JACKETT_VIRTUAL_HOST}"
     command:
-      - http://jackett-api:80
+      - http://jackett-api:9117

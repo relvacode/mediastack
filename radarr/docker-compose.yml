@@ -1,26 +1,31 @@
-version: '2'
+version: '2.1'
+
 networks:
   torrent:
     external: true
   http:
     external: true
+
 services:
   radarr:
+    extends:
+      file: ../base/docker-compose.yml
+      service: application
     image: linuxserver/radarr
     environment:
-      PUID: '1003'
-      PGID: '1005'
+      PUID: '1000'
+      PGID: '1000'
+      TZ: Europe/London
     networks:
     - default
     - torrent
     volumes:
-    - /var/lib/docker/persistence/radarr:/config
-    - /var/lib/ds/movies:/var/lib/ds/movies
-    - /var/lib/ds/torrent:/var/lib/ds/torrent
-    tty: true
+    - /docker/radarr:/config
+    - /ds/movies:/movies
+    - /ds/torrent:/ds/torrent
   oauth:
     extends:
-      file: ../oauth/oauth-service.yml
+      file: ../oauth/docker-compose.yml
       service: oauth
     command:
       - http://radarr:7878
