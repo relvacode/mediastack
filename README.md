@@ -30,13 +30,25 @@ An all-in-one Docker compose media server for internet based hosting
 
 Caddy is an HTTP proxy, it is used to direct incoming SSL encrypted web traffic to the correct Docker container based on the requested hostname.
 
+#### DNS
+
+To use Caddy you'll have to setup your DNS so that each `VIRTUAL_HOST` points to your server IP. 
+
+Instructions for this vary based on your DNS provider but essentially you need:
+  - An `A` name of your root domain, i.e. `example.org` pointing to your server IP
+  - A `CNAME` of `*.example.org` pointing to `example.org`
+  
+You can also setup each hostname individually if you prefer.
+
+#### Setup
+
 Create the `http` network which Caddy will use to communicate to containers with
 
 ```
 docker network create http
 ```
 
-Then create a `.env` file in [caddy/](caddy/) containing your LetsEncrypt e-mail address
+Then create a `.env` file in [caddy/](caddy/) containing your LetsEncrypt e-mail address. This just needs to be a valid e-mail address, there is no account to setup
 
 ```
 CADDY_EMAIL=me@example.org
@@ -53,7 +65,13 @@ docker-compose up -d
 
 Each application needs a `VIRTUAL_HOST` environment variable to tell Caddy what hostname to serve each application on.
 
-The best way to achieve this is by creating `.env` files in the stack directory.
+The best way to achieve this is by creating `.env` files in the stack directory
+
+```
+cd sonarr
+echo "VIRTUAL_HOST=sonnar.example.org" >> .env
+docker-compose up -d
+```
 
 You can also define the virtual host when starting the application stack with
 
@@ -72,7 +90,7 @@ Follow [these instructions](https://pusher.github.io/oauth2_proxy/auth-configura
 
 ## Applications
 
-#### [Plex](https://hub.docker.com/r/plexinc/pms-docker/) with [Tautulli](https://hub.docker.com/r/tautulli/tautulli/)
+### [Plex](https://hub.docker.com/r/plexinc/pms-docker/) with [Tautulli](https://hub.docker.com/r/tautulli/tautulli/)
 
 | What | Where |
 | ---- | ----- |
@@ -99,7 +117,7 @@ Note you do not need to enable Remote Access with this method.
 
 I also uncheck `Enable Relay` as I don't want my connections going via Plex's servers.
 
-#### [Deluge](https://hub.docker.com/r/linuxserver/deluge/) with [VPN](https://hub.docker.com/r/dperson/openvpn-client/)
+### [Deluge](https://hub.docker.com/r/linuxserver/deluge/) with [VPN](https://hub.docker.com/r/dperson/openvpn-client/)
 
 | What | Where |
 | ---- | ----- |
