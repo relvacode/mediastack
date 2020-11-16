@@ -14,10 +14,15 @@ services:
       TZ: Europe/London
       PLEX_UID: '1000'
       PLEX_GID: '1000'
-    ports:
-     - 32400:32400
     tmpfs:
     - /transcode
+    networks:
+    - default
+    - http
+    labels:
+      caddy.address: "${PLEX_VIRTUAL_HOST}"
+      caddy.targetport: "32400"
+      caddy.proxy.transparent: ""
     volumes:
     - /docker/plex:/config
     - /tmp
