@@ -7,6 +7,9 @@ networks:
 
 services:
   caddy:
+    extends:
+      file: ../base/docker-compose.yml
+      service: application
     image: lucaslorentz/caddy-docker-proxy
     ports:
       - '80:80'
@@ -20,3 +23,4 @@ services:
       - -email
       - '${CADDY_EMAIL}'
       - -agree=true
+      - -log=stdout
