@@ -72,6 +72,33 @@ Follow [these instructions](https://pusher.github.io/oauth2_proxy/auth-configura
 
 ## Applications
 
+#### [Plex](https://hub.docker.com/r/plexinc/pms-docker/) with [Tautulli](https://hub.docker.com/r/tautulli/tautulli/)
+
+| What | Where |
+| ---- | ----- |
+| Plex Config | `/docker/plex` |
+| TV Shows | `/ds/tvshows` |
+| Movies | `/ds/movies` |
+
+```
+cd plex
+echo "PLEX_VIRTUAL_HOST=plex.example.org" >> .env
+echo "VIRTUAL_HOST=tautulli.example.org" >> .env
+docker-compose up -d
+```
+
+Once Plex has started, to gain access from devices follow these steps (replace `PLEX_VIRTUAL_HOST` with the hostname you setup in your env file).
+
+Note you do not need to enable Remote Access with this method.
+
+  - Open `https://PLEX_VIRTUAL_HOST:3200` in your browser
+  - Setup the server as usual
+  - Go to `Settings` -> `Network`
+  - Set `Secure connections` to `DISABLED`. This doesn't actually disable secure connections to your server as Caddy will be arbitrating TLS
+  - Set `Custom server access URLs` to `https://PLEX_VIRTUAL_HOST:3200`
+
+I also uncheck `Enable Relay` as I don't want my connections going via Plex's servers.
+
 #### [Deluge](https://hub.docker.com/r/linuxserver/deluge/) with [VPN](https://hub.docker.com/r/dperson/openvpn-client/)
 
 | What | Where |
