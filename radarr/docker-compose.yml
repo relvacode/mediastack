@@ -11,7 +11,7 @@ services:
     extends:
       file: ../base/docker-compose.yml
       service: application
-    image: linuxserver/radarr
+    image: linuxserver/radarr:nightly
     environment:
       PUID: '1000'
       PGID: '1000'
